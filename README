@@ -3,7 +3,7 @@
 			        14 Dec 2009
 	   	    	 Hiroyuki Nakamura
 
-iRemoteWipe is a backend module of z-push which is a an implementaion of
+iRemoteWipe is a backend module of z-push which is a an implementation of
 the ActiveSync protocol. It allows you to manage your iPhone and to execute
 Remote Wipe as same as Exchange Server's one.
 
