@@ -1,0 +1,70 @@
+Installing iRemoteWipe
+======================
+
+Requirements
+------------
+
+iRemoteWipe runs on PHP5. I've tested only on Snow Leopard(MacOS X 10.6).
+
+
+How to install
+--------------
+
+To Install iRemoteWipe, simply do the follwoing commands.
+
+% configure   <DOCROOT>  <CONF_DIR>
+% sudo make install
+
+<DOCROOT>  : path to web server's document root directory
+<CONF_DIR> : path to apache httpd.conf (ex: /etc/apache2)
+
+It adds the following Alias Directive into your httpd.conf.
+
+Alias /Microsoft-Server-ActiveSync /var/www/z-push/index.php
+
+Lastly, make sure that PHP has the following settings:
+
+php_flag magic_quotes_gpc off
+php_flag register_globals off
+php_flag magic_quotes_runtime off
+php_flag short_open_tag on
+
+
+Setting up your iPhone
+------------------------
+
+This is simply a case of adding an 'Exchange Server' to your iPhone
+Mail/Calendar/Contact list, specifying machine name of iRemoteWipe 
+apache server, disabling SSL, unless you have already setup SSL on your 
+Apache server, setting the correct username & password (the domain is ignored, 
+you can keep it blank), and then you should be enable only "Contact" settings.
+
+Once you have done this, you will see a contact group says "Dummy" in your 
+contact list.
+
+Troubleshooting
+---------------
+
+Most problems will be caused by incorrect Apache settings. To test whether
+your Apache setup is working correctly, you can simply type the following URL
+in your browser, to see if apache is correctly redirecting your request to
+z-push. You can simply use:
+
+http://<serverip>/Microsoft-Server-ActiveSync
+
+If correctly configured, you should see a username/password request, and
+when you specify a valid username & password, you should see a string like
+
+"This is the z-push location and can only be accessed by Microsoft ActiveSync-capable devices."
+
+If not, then check your PHP and Apache settings.
+
+If you have other synchronisation problems, you can create the file
+'debug.txt' in the root directory of z-push, which should also be
+world-writable:
+
+touch /Library/WebServer/Documents/z-push/debug.txt
+chmod 777 /Library/WebServer/Documents/z-push/debug.txt
+
+The debug.txt file will then collect debug information from your
+synchronisation.
