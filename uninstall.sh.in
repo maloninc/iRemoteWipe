@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Remove z-push module including wiper module
+rm -fvr DOCROOT/z-push
+
+# Remove wiper DB
+rm -fvr /var/db/wiper
+
+# Remove "Alias Directive" to httpd.conf
+patch -Rp0 < httpd.patch
+
+# Remove wipectl
+rm -fv /usr/local/bin/wipectl
+
+apachectl restart

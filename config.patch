@@ -1,0 +1,19 @@
+--- config.php	2009-11-14 05:38:35.000000000 +0900
++++ config.php	2009-12-13 15:45:57.000000000 +0900
+@@ -45,7 +45,8 @@
+     define('LOOSE_PROVISIONING', false); 
+     
+     // The data providers that we are using (see configuration below)
+-    $BACKEND_PROVIDER = "BackendICS";
++    //$BACKEND_PROVIDER = "BackendICS";
++	$BACKEND_PROVIDER = "BackendWiper";
+ 
+     // ************************
+     //  BackendICS settings
+@@ -86,4 +87,4 @@
+     // **********************
+     define('VCARDDIR_DIR', '/home/%u/.kde/share/apps/kabc/stdvcf');
+ 
+-?>
+\ No newline at end of file
++?>

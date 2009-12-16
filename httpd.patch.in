@@ -1,0 +1,12 @@
+--- APACHE_ETC/httpd.conf	2009-12-14 17:30:40.000000000 +0900
++++ APACHE_ETC/httpd.conf	2009-12-11 10:24:15.000000000 +0900
+@@ -326,6 +326,9 @@
+     # directives as to Alias.
+     #
+     ScriptAliasMatch ^/cgi-bin/((?!(?i:webobjects)).*$) "/Library/WebServer/CGI-Executables/$1"
++
++    Alias /Microsoft-Server-ActiveSync DOCROOT/z-push/index.php
++
+ </IfModule>
+ 
+ <IfModule cgid_module>

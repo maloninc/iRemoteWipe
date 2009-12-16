@@ -1,0 +1,4 @@
+#!/bin/sh
+
+touch DOCROOT/z-push/debug.txt
+chmod 777 DOCROOT/z-push/debug.txt

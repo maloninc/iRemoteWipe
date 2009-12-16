@@ -1,0 +1,41 @@
+#!/bin/sh
+
+mkdir /tmp/$$
+
+cp z-push-1.3RC.tar.gz /tmp/$$
+cp config.patch /tmp/$$
+cp wiper.php /tmp/$$/
+cp wipectl /tmp/$$/
+cp wipe_table.sql /tmp/$$
+cp httpd.patch /tmp/$$
+
+
+# Extract z-push modules
+cd DOCROOT
+tar zxvf /tmp/$$/z-push-1.3RC.tar.gz
+
+# This is what required by z-push
+chmod 777 DOCROOT/z-push/state
+
+# Modify z-push config so that it can load wipe module
+cd DOCROOT/z-push
+patch -Np0 < /tmp/$$/config.patch
+
+# Copy wipe module to z-push directory
+cp /tmp/$$/wiper.php  DOCROOT/z-push/backend
+
+# Create SQLite3 DB
+mkdir /var/db/wiper/
+sqlite3 /var/db/wiper/wiper.db  < /tmp/$$/wipe_table.sql
+chown -R _www /var/db/wiper
+
+# Add "Alias Directive" to httpd.conf
+patch -Np0 < /tmp/$$/httpd.patch
+
+# Copy wipectl to /usr/local/bin/
+mkdir -p /usr/local/bin/
+cp /tmp/$$/wipectl /usr/local/bin/
+
+apachectl restart
+
+rm -fr /tmp/$$

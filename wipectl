@@ -1,0 +1,152 @@
+#!/usr/bin/ruby
+
+require 'rubygems'
+require 'sqlite3'
+require 'optparse'
+
+DB_FILE = '/var/db/wiper/wiper.db'
+Version = '1.0.0'
+ProgName = File::basename($0)
+
+def list
+	header  = ['UserId', 'DeviceId', 'Status', 'PolicyKey']
+	header2 = ['------', '--------', '------', '---------']
+
+	puts ""
+	printf "%-16s  %-16s  %-16s  %-16s\n", header[0], header[1], header[2], header[3]
+	printf "%-16s  %-16s  %-16s  %-16s\n", header2[0], header2[1], header2[2], header2[3]
+	begin
+		db = SQLite3::Database.new(DB_FILE)
+		db.execute('select * from wipe_table') do |row|
+		  status = row[2].to_i
+		  case status
+		  when  0 .. 1
+		    row[2] = "OK(#{status})"
+		  when  2
+		    row[2] = "EXECUTING(#{status})"
+		  when  3
+		    row[2] = "WIPED(#{status})"
+		  end
+		  printf "%-16s  %-16s  %-16s  %-16s\n", row[0], row[1], row[2], row[3]
+		end
+		puts ""
+		db.close
+	rescue => e
+		puts("Error has occured")
+		p e
+	end
+end
+
+def wipe(userid, devid)
+	if userid  == ""
+		puts("User id must be provided when you use --wipe option")
+		return
+	end
+	if devid == ""
+		puts("Device id must be provided when you use --wipe option")
+		return
+	end
+	print("ARE YOU SURE EXECUTING REMOTE WIPE? (yes/no) : ")
+	answer = gets.chomp.downcase
+	if answer != 'yes'
+		puts("Remote wipe is canceled")
+		return
+	end
+
+	begin
+		db = SQLite3::Database.new(DB_FILE)
+		db.execute('update wipe_table set rwstatus = 2, policykey = 0 where user = ? and devid = ?', userid, devid)
+		if db.changes == 0
+			puts("Error: There is no such record");
+			db.close
+			return
+		end
+		db.close
+		puts("Remote wipe is executed. " + "User Id: " + userid + " Dev Id: " + devid)
+	rescue => e
+		puts("Error has occured")
+		p e
+	end
+end
+
+def refresh(userid, devid)
+	if userid  == ""
+		puts("User id must be provided when you use --refresh option")
+		return
+	end
+	if devid == ""
+		puts("Device id must be provided when you use --refresh option")
+		return
+	end
+
+	begin
+		db = SQLite3::Database.new(DB_FILE)
+		db.execute('update wipe_table set rwstatus = 0, policykey = 1 where user = ? and devid = ?', userid, devid)
+		if db.changes == 0
+			puts("Error: There is no such record");
+			db.close
+			return
+		end
+		db.close
+		puts("Refresh record. " + "User Id: " + userid + " Dev Id: " + devid)
+	rescue => e
+		puts("Error has occured")
+		p e
+	end
+end
+
+def delete(userid, devid)
+	if userid  == ""
+		puts("User id must be provided when you use --delete option")
+		return
+	end
+	if devid == ""
+		puts("Device id must be provided when you use --delete option")
+		return
+	end
+
+	begin
+		db = SQLite3::Database.new(DB_FILE)
+		db.execute('delete from wipe_table where user = ? and devid = ?', userid, devid)
+		if db.changes == 0
+			puts("Error: There is no such record");
+			db.close
+			return
+		end
+		db.close
+		puts("Delete record. " + "User Id: " + userid + " Dev Id: " + devid)
+	rescue => e
+		puts("Error has occured")
+		p e
+	end
+end
+
+#------------------------------------------------------------------
+OPTS = Hash.new
+command = nil
+opts = OptionParser.new
+opts.on("--userid USERID", "User ID which will be wipe/refresh"){|v|
+	OPTS[:userid] = v
+}
+opts.on("--devid DEVID", "Device ID which will be wipe/refresh"){|v|
+	OPTS[:devid] = v
+}
+opts.on("-l", "--list", "Show device list"){|v| 
+	list
+} 
+opts.on("--wipe", "Execute remote wipe (ex: #{ProgName} --wipe --userid USERID --devid DEVID)"){|v| 
+	command = "wipe"
+} 
+opts.on("--refresh", "refresh device information (ex: #{ProgName} --refresh --userid USERID --devid DEVID)"){|v| 
+	command = "refresh"
+} 
+opts.on("--delete", "delete device record (ex: #{ProgName} --delete --userid USERID --devid DEVID)"){|v| 
+	command = "delete"
+} 
+
+opts.parse!(ARGV) 
+
+if command
+	eval( command + "(\"#{OPTS[:userid]}\", \"#{OPTS[:devid]}\")")
+end
+

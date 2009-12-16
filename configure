@@ -1,0 +1,22 @@
+#!/bin/csh
+
+if ( $#argv < 2 ) then
+  echo "Usage $0:t   <Document root>   <path to httpd.conf> "
+  echo ""
+  echo "ex: $0:t   /var/www  /etc/apache2"
+  echo ""
+  exit
+endif
+
+set DOCROOT = "$1"
+set CONF    = "$2"
+
+echo   "define(DOCROOT, "\`"${DOCROOT:h}"\'")" >  /tmp/$$.m4
+echo   "define(APACHE_ETC, "\`"${CONF:h}"\'")" >> /tmp/$$.m4
+
+foreach file (*.in)
+  cat /tmp/$$.m4 $file  | m4 > $file:r
+  chmod 755 $file:r
+end
+
+rm -f /tmp/$$*
