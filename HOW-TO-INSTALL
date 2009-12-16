@@ -22,6 +22,12 @@ It adds the following Alias Directive into your httpd.conf.
 
 Alias /Microsoft-Server-ActiveSync /var/www/z-push/index.php
 
+Then, you must modify the following lines in wiper.php at  <DOCROOT>/z-push/backend/ directory 
+regarding to your LDAP environment.
+
+define('LDAP_SERVER', 'your.server');
+define('LDAP_DOMAIN', 'dc=your,dc=server');
+
 Lastly, make sure that PHP has the following settings:
 
 php_flag magic_quotes_gpc off
@@ -48,19 +54,19 @@ Troubleshooting
 Most problems will be caused by incorrect Apache settings. To test whether
 your Apache setup is working correctly, you can simply type the following URL
 in your browser, to see if apache is correctly redirecting your request to
-z-push. You can simply use:
+Z-Push. You can simply use:
 
 http://<serverip>/Microsoft-Server-ActiveSync
 
 If correctly configured, you should see a username/password request, and
 when you specify a valid username & password, you should see a string like
 
-"This is the z-push location and can only be accessed by Microsoft ActiveSync-capable devices."
+"This is the Z-Push location and can only be accessed by Microsoft ActiveSync-capable devices."
 
 If not, then check your PHP and Apache settings.
 
 If you have other synchronisation problems, you can create the file
-'debug.txt' in the root directory of z-push, which should also be
+'debug.txt' in the root directory of Z-Push, which should also be
 world-writable:
 
 touch /Library/WebServer/Documents/z-push/debug.txt
