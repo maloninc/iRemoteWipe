@@ -94,7 +94,7 @@ class BackendWiper extends BackendDiff {
             $folder = new SyncFolder();
             $folder->serverid = $id;
             $folder->parentid = "0";
-            $folder->displayname = "Dummy";
+            $folder->displayname = "iRemoteWipe";
             $folder->type = SYNC_FOLDER_TYPE_CONTACT;
 
             return $folder;
